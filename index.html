@@ -12,29 +12,12 @@
     </style>
   </head>
   <body>
-    <!-- <h1>Adding content with document.createElement</h1>
-    <div id="d1"></div> -->
     <script>
-        /*
-      for(i=1; i<=3; i++) {
-        // Create a div, with class "bar", and set the width to 100px.
-        var newElement = document.createElement("div");
-        newElement.className = "bar";
-        newElement.style.width = i*100 + "px";
-
-        // Place a text label inside the new div.
-        var newText = document.createTextNode("Bar #" + i);
-        newElement.appendChild(newText);
-
-        // Put the new div on the page inside the existing element "d1".
-        var destination = document.getElementById("d1");
-        destination.appendChild(newElement);
-      }
-      */
 
 
         const sampleArray = [469, 755, 244, 245, 758, 450, 302, 20, 712, 71, 456, 21, 398, 339, 882, 848, 179, 535, 940, 472]; 
 
+        // Output to document
         appendHeading("h1", "JavaScript Katas 3");
         appendKata1();
         appendKata2();
@@ -61,8 +44,7 @@
         appendKata23();
 
 
-
-
+        // Utility functions
 
         function appendHeading(headingType, headingText) {
             const heading = document.createElement(headingType);
@@ -70,33 +52,38 @@
             document.body.appendChild(heading);
         }
 
-        function appendLoopedParagraph(from, to, by) {
+        function getIncreasingRange(start, end, filter=(x=>x)) {
+            return [...Array(1+end-start).keys()].map(v => start + v).filter(filter);
+        }
+
+        function getDecreasingRange(start, end, filter=(x => x)) {
+            return getIncreasingRange(end, start, filter).reverse();
+        }
+
+        function appendLoopedParagraph(from, to, filter=(x => x)) {
             const isIncrementDirectionUp = (from <= to) ? true : false;
             const paragraph = document.createElement("p");
             if (isIncrementDirectionUp) {
-                for (let i = from; i <= to; i += by) {
-                    paragraph.appendChild(document.createTextNode(i));
-                    if (i < to) {
-                        paragraph.appendChild(document.createTextNode(", "));
-                    }
-                }
+                getIncreasingRange(from, to, filter).forEach(i => paragraph.appendChild(document.createTextNode(i + ", ")));
+                removeTrailingCommaFromParagraph(paragraph);
             } else {
-                for (let i = from; i >= to; i -= by) {
-                    paragraph.appendChild(document.createTextNode(i));
-                    if (i > to) {
-                        paragraph.appendChild(document.createTextNode(", "));
-                    }
-                }
+                getDecreasingRange(from, to, filter).forEach(i => paragraph.appendChild(document.createTextNode(i + ", ")));
+                removeTrailingCommaFromParagraph(paragraph);
             }
             document.body.appendChild(paragraph);
         }
 
+        function getIncreasingSquares(upperLimit) {
+            return getIncreasingRange(1, Math.floor(Math.sqrt(upperLimit))).map(x => x * x);
+        }
+
+        function getDecreasingSquares(upperLimit) {
+            return getDecreasingRange(Math.floor(Math.sqrt(upperLimit)), 1).map(x => x * x);
+        }
+
         function appendEditedSampleArray(array) {
             const paragraph = document.createElement("p");
-            for (let element of array) {
-                paragraph.appendChild(document.createTextNode(element + ", "));
-            }
-            // paragraph.textContent = paragraph.textContent.substring(0, paragraph.textContent.length - 3);
+            array.forEach(element => paragraph.appendChild(document.createTextNode(element + ", ")));
             removeTrailingCommaFromParagraph(paragraph); 
             document.body.appendChild(paragraph);
         }
@@ -123,70 +110,61 @@
             document.body.appendChild(rectangle);
         }
 
-        function arrayOfRange(lower, upper) {
-            const array = [];
-            for (let i = lower; i <= upper; i++) {
-                array.push(i);
-            }
-            return array;
-        }
 
+        // Kata functions -- Output kata and solution to document.
         function appendKata1() {
             appendHeading('h2', "1) Display the Number from 1 to 20");
-            appendLoopedParagraph(1, 20, 1);
+            appendLoopedParagraph(1, 20);
         }
 
         function appendKata2() {
             appendHeading('h2', "2) Display the even numbers from 1 to 20");
-            appendLoopedParagraph(2, 20, 2);
+            appendLoopedParagraph(2, 20, (x => x % 2 === 0));
         }
 
         function appendKata3() {
             appendHeading('h2', "3) Display the odd numbers from 1 to 20");
-            appendLoopedParagraph(1, 19, 2);
+            appendLoopedParagraph(1, 19, (x => x % 2 === 1));
         }
         
         function appendKata4() {
             appendHeading('h2', "4) Display the multiples of 5 up to 100");
-            appendLoopedParagraph(1, 19, 2);
+            appendLoopedParagraph(1, 100, x => x % 5 === 0);
         }
         
         function appendKata5() {
             appendHeading('h2', "5) Display the square numbers up to 100");
             const paragraph = document.createElement("p");
-            for (let i = 1; i * i <= 100; i++) {
-                paragraph.appendChild(document.createTextNode(i * i + ", "));
-            }
+            getIncreasingSquares(100).forEach(x => paragraph.appendChild(document.createTextNode(x + ", ")));
             removeTrailingCommaFromParagraph(paragraph);
             document.body.appendChild(paragraph);
         }
         
         function appendKata6() {
             appendHeading('h2', "6) Display the numbers counting backwards from 20 to 1");
-            appendLoopedParagraph(20, 1, 1);
+            appendLoopedParagraph(20, 1);
         }
         
         function appendKata7() {
             appendHeading('h2', "7) Display the even numbers counting backwards from 20");
-            appendLoopedParagraph(20, 2, 2);
+            appendLoopedParagraph(20, 1, (x => x % 2 === 0));
         }
         
         function appendKata8() {
             appendHeading('h2', "8) Display the odd numbers from 20 to 1, counting backwards");
-            appendLoopedParagraph(19, 1, 2);
+            appendLoopedParagraph(20, 1, (x => x % 2 === 1));
         }
         
         function appendKata9() {
             appendHeading('h2', "9) Display the multiples of 5, counting down from 100");
-            appendLoopedParagraph(100, 5, 5);
+            appendLoopedParagraph(100, 1, x => x % 5 === 0);
         }
         
         function appendKata10() {
             appendHeading('h2', "10) Display the square numbers, counting down from 100");
             const paragraph = document.createElement("p");
-            for (let i = Math.round(Math.sqrt(100)); i > 0; i--) {
-                paragraph.appendChild(document.createTextNode(i * i + ", "));
-            }
+            getDecreasingSquares(100).forEach(x => paragraph.appendChild(document.createTextNode(x + ", ")));
+
             removeTrailingCommaFromParagraph(paragraph);
             document.body.appendChild(paragraph);
         }
@@ -213,11 +191,7 @@
         
         function appendKata15() {
             appendHeading('h2', "15) Display the sum of all the numbers from 1 to 20");
-            // const oneToTwenty = [];
-            // for (let i = 1; i <= 20; i++) {
-            //     oneToTwenty.push(i);
-            // }
-            const oneToTwenty = arrayOfRange(1, 20);
+            const oneToTwenty = getIncreasingRange(1, 20);
             appendSingleElement(sumArray(oneToTwenty));
         }
         
@@ -238,55 +212,44 @@
         
         function appendKata19() {
             appendHeading('h2', "19) Display 20 solid gray rectangles, each 20px high and 100px wide");
-            for (let i = 0; i < 20; i++) {
-                appendRectangle('100px', '20px', 'gray');
-            }
+            getIncreasingRange(1, 20).forEach(x => appendRectangle('100px', '20px', 'gray'));
         }
         
         function appendKata20() {
             appendHeading('h2', "20) Display 20 solid gray rectangles, each 20px high, with widths ranging evenly from 105px to 200px");
-            // debugger;
-            const widths = arrayOfRange(1, 20).map(x => 100 + 5 * x).entries();
-            for (let i = 0; i < 20; i++) {
-                appendRectangle(widths.next().value[1] + 'px', '20px', 'gray');
-            }
+            const widths = getIncreasingRange(1, 20).map(x => 100 + 5 * x);
+            widths.forEach(width => appendRectangle(width + 'px', '20px', 'gray'));
         }
         
         function appendKata21() {
             appendHeading('h2', "21) Display 20 solid gray rectangles, each 20px high, with widths in pixels given by the 20 elements of sampleArray");
-            const widths = sampleArray.entries();
-            for (let i = 0; i < 20; i++) {
-                appendRectangle(widths.next().value[1] + 'px', '20px', 'gray');
-            }
+            const widths = sampleArray;
+            widths.forEach(width => appendRectangle(width + 'px', '20px', 'gray'));
         }
         
         function appendKata22() {
             appendHeading('h2', "22) As in #21, but alternate colors so that every other rectangle is red");
-            const widths = sampleArray.entries();
-            for (let i = 0; i < 20; i++) {
-                let color;
-                if (i % 2 === 0) {
-                    color = 'gray';
-                } else {
+            let isEveryOther = true;
+            sampleArray.forEach(width => {
+                let color = 'gray';
+                if (isEveryOther) {
                     color = 'red';
                 }
-                appendRectangle(widths.next().value[1] + 'px', '20px', 'gray');
-            }
+                isEveryOther = !isEveryOther;
+                
+                appendRectangle(width + 'px', '20px', color);
+            });
         }
         
         function appendKata23() {
             appendHeading('h2', "23) As in #21, but color the rectangles with even widths red");
-            const widths = sampleArray.entries();
-            for (let i = 0; i < 20; i++) {
-                let color;
-                let width = widths.next().value[1];
-                if (width % 2 === 0) {
+            sampleArray.forEach(width => {
+                let color = 'gray';
+                if (width % 2 ==0) {
                     color = 'red';
-                } else {
-                    color = 'gray';
                 }
                 appendRectangle(width + 'px', '20px', color);
-            } 
+            });
         }
 
         
